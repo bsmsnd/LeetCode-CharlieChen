@@ -1,14 +1,18 @@
 /*
- * @lc app=leetcode id=85 lang=cpp
+ * @lc app=leetcode id=84 lang=cpp
  *
- * [85] Maximal Rectangle
+ * [84] Largest Rectangle in Histogram
  */
+#include <vector>
+#include <stack>
+using namespace std;
+
 class Solution {
 public:
-    int size;   
-    int largestRectangleArea(int heights[]) {
+    int largestRectangleArea(vector<int>& heights) {
         stack<int> s;  // save indices        
-        int best_ans = 0;        
+        int best_ans = 0;
+        int size = heights.size();
         int last;
         int cur_ans;
         if (size == 0)
@@ -43,33 +47,6 @@ public:
             best_ans = max(best_ans, cur_ans);                        
         }
         return best_ans;          
-    }  
-       
-    int maximalRectangle(vector<vector<char>>& matrix) {
-        const int n_rows = matrix.size();
-        if (n_rows == 0)
-            return 0;
-        const int n_cols = matrix[0].size();
-        if (n_cols == 0)
-            return 0;
-        int hist[n_cols];
-        size = n_cols;
-        for(int i = 0;i<n_cols;i++)
-            hist[i] = 0;
-        int best_ans = 0; 
-        for (int i = 0 ; i < n_rows; i ++)
-        {
-            for (int j = 0 ; j < n_cols;j++)
-                if (matrix[i][j] == '1')
-                    hist[j]++;
-                else
-                    hist[j] = 0;
-            int cur = largestRectangleArea(hist);
-            // printf("%d %d %d %d %d\n", hist[0], hist[1], hist[2], hist[3], hist[4]);
-            best_ans = max(best_ans, cur);            
-        }
-        return best_ans;
-        
-    }
+    }    
 };
 
