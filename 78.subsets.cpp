@@ -3,12 +3,6 @@
  *
  * [78] Subsets
  */
-#include <vector>
-#include <cmath>
-using namespace std;
-
-
-
 class Solution {
 public:
     vector<vector<int>> subsets(vector<int>& nums) {
