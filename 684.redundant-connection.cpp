@@ -3,29 +3,30 @@
  *
  * [684] Redundant Connection
  */
+#include <unordered_map>
+#include <vector>
+using namespace std;
 
 class Solution {
 public:
-    vector<int> p;  // Disjoint-set
-
+    // unordered_map<int, int> parent;
+    int parent[1001];
     int find(int x)
     {
-        return p[x] == x ? x : p[x] = find(p[x]);
+        return parent[x] == -1 ? x : parent[x] = find(parent[x]);
     }
-
-    vector<int> findRedundantConnection(vector<vector<int>>& edges) {
-        const int V = edges.size();
-        const int E = V;
-        for (int i = 0; i < V+1; ++i)
-            p.push_back(i);            
-        for (int i = 0; i < E; ++i)
+    vector<int> findRedundantConnection(vector<vector<int>>& edges) {   
+        memset(parent, -1, sizeof(parent));     
+        int E = edges.size();
+        for (int i = 0;i < E; i++)
         {
+            if (edges[i][0] > edges[i][1]) swap(edges[i][0], edges[i][1]);
             int x = find(edges[i][0]);
             int y = find(edges[i][1]);
-            if (x!=y)
-                p[x] = y;
-            else
+            if (x == y)
                 return edges[i];
+            else
+            parent[y] = x;
         }
         return edges.back();
     }

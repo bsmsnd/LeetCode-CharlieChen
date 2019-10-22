@@ -3,28 +3,35 @@
  *
  * [63] Unique Paths II
  */
+#include <vector>
+using namespace std;
+
 class Solution {
 public:
     long long uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {        
-        const int M = obstacleGrid.size();
-        if (M == 0)
-            return 0;
-        const int N = obstacleGrid[0].size();
-        long long sol[M][N];
-        if (obstacleGrid[0][0] == 1)
-            return 0;
-        else
-            sol[0][0] = 1;
-        for (int i = 0;i < M; i++)
-            for (int j = 0; j < N ; j++)
-                if (!(i==0 && j==0))
-                {
-                    if (obstacleGrid[i][j] == 0)                    
-                        sol[i][j] = (i>0 ? sol[i-1][j] : 0)  +  (j>0?sol[i][j-1] : 0);
-                    else
-                        sol[i][j] = 0;
-                }                    
-        return sol[M-1][N-1];    
+        const int N = obstacleGrid.size();
+        if (N == 0)return 0;
+        const int M = obstacleGrid[0].size();
+        if (M == 0)return 0;
+        if (obstacleGrid[0][0] == 1)return 0;
+
+        long long ans[N][M];
+        ans[0][0] = 1;
+
+        for (int i = 0;i < N; i++)
+        for (int j = 0;j < M; j++)
+        {
+            if (i == 0 && j == 0)
+                continue;
+            ans[i][j] = 0;
+            if (obstacleGrid[i][j] == 1)
+                continue;
+            if (i > 0)
+                ans[i][j] += ans[i-1][j];
+            if (j > 0)
+                ans[i][j] += ans[i][j-1];
+        }
+        return ans[N-1][M-1];
     }
 };
 
