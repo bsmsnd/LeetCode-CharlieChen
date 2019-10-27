@@ -3,48 +3,50 @@
  *
  * [857] Minimum Cost to Hire K Workers
  */
-vector<double> unitCost;
+#include <vector>
+#include <algorithm>
+#include <queue>
+using namespace std;
+
+double perQualityWage[10001];
 bool cmp(int a, int b)
 {
-    return unitCost[a]  <= unitCost[b];
+    return perQualityWage[a] < perQualityWage[b];
 }
+
 
 class Solution {
 public:
     double mincostToHireWorkers(vector<int>& quality, vector<int>& wage, int K) {
-        const int N = quality.size();        
-        unitCost.resize(N);
-        int order[N];
-        for (int i = 0;i < N ; i++)
-        {
-            unitCost[i] = (double)(wage[i]) / quality[i];
-            order[i] = i;
-        }
-                            
-        sort(order, order+N, cmp);
+        const int N = quality.size();
         
-        priority_queue<int> qu;
-        double ans;
-        int acc_quality = 0;
-        for (int i = 0;i < K;i++)
+        int idx[N];
+        for (int i = 0;i < N; i++)
         {
-            qu.push(quality[order[i]]);
-            acc_quality += quality[order[i]];
+            perQualityWage[i] = (double)(wage[i]) / quality[i];
+            idx[i] = i;
         }
-        // cout<<unitCost[order[K-1]]<<" "<<acc_quality<<endl;
-        ans = unitCost[order[K-1]] * acc_quality;
-        
-        for (int i = K; i<N;i++)
-        if (quality[order[i]] < qu.top())
+
+        sort(idx, idx+N, cmp);
+        priority_queue<int> q;
+        int tot_quality = 0;
+        for (int i = 0;i < K; i++) // get first K
         {
-            acc_quality -= qu.top();            
-            qu.pop();
-            acc_quality += quality[order[i]];
-            qu.push(quality[order[i]]);
-            // cout<<unitCost[order[i]]<<" "<<acc_quality<<endl;
-            ans = min(ans, unitCost[order[i]] * acc_quality);
+            q.push(quality[idx[i]]);
+            tot_quality += quality[idx[i]];
+        }        
+        double best_ans = tot_quality * perQualityWage[idx[K-1]];
+
+        for (int i = K; i < N; i++) // see others with higher per quality wage, min. quality
+        if (q.top() > quality[idx[i]])
+        {            
+            tot_quality -= q.top();
+            tot_quality += quality[idx[i]];
+            q.pop();
+            q.push(quality[idx[i]]);
+            best_ans = min(best_ans, tot_quality * perQualityWage[idx[i]]);
         }
-        return ans;
+        return best_ans;        
     }
 };
 
