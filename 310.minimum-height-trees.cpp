@@ -42,8 +42,9 @@ public:
                     q.push(i);
                     left_nodes--;
                 }
-            // travse the graph to locate all leaves
-            while(left_nodes > 2)
+            // traverse the graph to locate all leaves
+            while(left_nodes > 2 && !q.empty())
+            // while(!q.empty())
             {
                 int S = q.size();
                 for (int i = 0 ; i < S;i++)
