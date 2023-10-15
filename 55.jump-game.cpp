@@ -5,19 +5,16 @@
  */
 class Solution {
 public:
-    bool canJump(vector<int>& nums) {    
-        int furthest_point = 0;
-        const int K = nums.size();
-        for (int i = 0;i < K;++i)
-        {
-            if (i > furthest_point)
-                return false;
-            else
-            {
-                furthest_point = max(i + nums[i], furthest_point);
+    bool canJump(vector<int>& nums) {
+        int furthestPoint = 0;
+        int target = nums.size() - 1;
+        for (int i = 0; i <= furthestPoint; i++) {
+            furthestPoint = max(furthestPoint, nums[i] + i);
+            if (furthestPoint >= target) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 };
 

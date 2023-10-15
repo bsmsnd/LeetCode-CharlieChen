@@ -3,26 +3,37 @@
  *
  * [45] Jump Game II
  */
+// #include "helper.h"
+
 class Solution {
 public:
+    static constexpr uint32_t MAX_NUMS_LENGTH = 10000;
     int jump(vector<int>& nums) {
-        const int K = nums.size();
-        int min_steps[K];
-        int furthest = 0;        
-        min_steps[0] = 0;
-        for (int i = 0;i<K;i++)
-        if (nums[i] >= 0 && i + nums[i] > furthest)
-        {            
-            for (int j = furthest + 1; j < min(i + nums[i] + 1, K); ++j)
-                min_steps[j] = min_steps[i] + 1;
-            furthest = i + nums[i];
-            if (furthest >= K)
-                return min_steps[K - 1];
-
+        const uint32_t n = nums.size();
+        for (uint32_t i = 0; i < n; i++) {
+            dist[i] = INT32_MAX;
         }
-        return min_steps[K-1];
 
+        dist[0] = 0;
+        for (int i = 0; i < n-1; i++) {
+            for (int j = 1; j <= nums[i]; j++) {
+                if ((i + j < n) && (dist[i + j] > dist[i] + 1)) {
+                    dist[i + j] = dist[i] + 1;
+                }
+            }
+        }
+        return dist[n-1];
     }
+private:
+    int dist[MAX_NUMS_LENGTH];
 };
+
+// int main()
+// {
+//     Solution sol;
+//     vector<int> s = {2, 3, 1, 1, 4};
+//     cout << sol.jump(s) << endl;
+//     return 0;
+// }
 
 

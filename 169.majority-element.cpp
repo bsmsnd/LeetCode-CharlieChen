@@ -6,24 +6,17 @@
 class Solution {
 public:
     int majorityElement(vector<int>& nums) {
-        int curValue;
-        int occurance = 0;
-        for (int i = 0;i < nums.size();++i)
-        {
-            if (occurance == 0)
-            {
-                curValue = nums[i];
-                occurance++;
+        int num;
+        uint32_t occurances = 0;
+        for (int i : nums) {
+            if (occurances == 0) {
+                num = i;
+                occurances = 1;
+            } else {
+                occurances = (num == i) ? occurances + 1 : occurances - 1;
             }
-            else
-            {
-                if (curValue == nums[i])
-                    occurance++;
-                else
-                    occurance--;
-            }            
         }
-        return curValue;
+        return num;
     }
 };
 

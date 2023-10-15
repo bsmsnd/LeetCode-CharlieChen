@@ -8,35 +8,26 @@ using namespace std;
 class Solution {
 public:
     vector<int> searchRange(vector<int>& nums, int target) {
-        vector<int> ans;
-        int N = nums.size();
-        if (N == 0)return {-1,-1};
-        int l = 0, r = N - 1, m;
-        
-        while (l <= r)
-        {
-            m = (l + r)/2;
-            if (nums[m] >= target)
-                r = m;
-            else
-                l = m + 1;
-        }       
-        int left = l;
-
-        l = left; r = N - 1;
-        while(l <= r)
-        {
-            m = (l + r) / 2;
-            if (nums[m] <= target)
-                l = m;
-            else
-                r = m - 1;
+        int p1 = BinarySearch(nums, target);
+        if (!(p1 >= 0 && p1 < nums.size() && nums[p1] == target)) {
+            return vector<int>{-1, -1};
         }
-        int right = r;
-        if (l <= r)
-            return {l,r};
-        else
-            return {-1, -1};
+        int p2 = BinarySearch(nums, target + 1) - 1;
+        return vector<int>{p1, p2};
+    }
+
+    int BinarySearch(vector<int>& nums, int target) {
+        int l = 0;
+        int r = nums.size();
+        while (r > l) {
+            int mid = l + (r - l) / 2;
+            if (nums[mid] < target) {
+                l = mid + 1;
+            } else if (nums[mid] >= target) {
+                r = mid;
+            }
+        }
+        return l;
     }
 };
 
