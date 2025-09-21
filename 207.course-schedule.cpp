@@ -1,58 +1,72 @@
 /*
- * @lc app=leetcode id=207 lang=cpp
+ * @lc app=leetcode.cn id=207 lang=cpp
+ * @lcpr version=30204
  *
- * [207] Course Schedule
+ * [207] 课程表
  */
-#include <unordered_map>
-#include <vector>
-using namespace std;
 
+
+// @lcpr-template-start
+using namespace std;
+#include <algorithm>
+#include <array>
+#include <bitset>
+#include <climits>
+#include <deque>
+#include <functional>
+#include <iostream>
+#include <list>
+#include <queue>
+#include <stack>
+#include <tuple>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <vector>
+// @lcpr-template-end
+// @lc code=start
 class Solution {
 public:
-
-    vector<int> parent;
-    vector<vector<int>> G;
-    vector<bool> visited;
-    bool DFS(int vertex)
-    {
-        visited[vertex] = true;
-        int n = G[vertex].size();
-        for (int i = 0;i < n; i++)
-        {
-            int pre = G[vertex][i];
-            if (!visited[pre])
-            {
-                parent[pre] = vertex;
-                if (!DFS(pre))
-                    return false;                
+    bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
+        vector<int> numOfPrerequisites(numCourses);
+        vector<list<int>> prerequisiteGraph(numCourses);
+        for (const vector<int>& prerequisite : prerequisites) {
+            prerequisiteGraph[prerequisite[1]].push_back(prerequisite[0]);
+            numOfPrerequisites[prerequisite[0]]++;
+        }
+        queue<int> courses;
+        for (int i = 0; i < numCourses; i++) {
+            if (numOfPrerequisites[i] == 0) {
+                courses.push(i);
             }
-            else
-            {
-                int p = parent[vertex];
-                while (p != -1)
-                {
-                    if (p == pre)
-                        return false;
-                    p = parent[p];
+        }
+
+        while (!courses.empty()) {
+            int course = courses.front();
+            courses.pop();
+            numCourses--;
+            for (int nextCourse : prerequisiteGraph[course]) {
+                numOfPrerequisites[nextCourse]--;
+                if (numOfPrerequisites[nextCourse] == 0) {
+                    courses.push(nextCourse);
                 }
             }
         }
-        return true;
-    }
-    
-    bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
-        G.resize(numCourses);
-        int n = prerequisites.size();
-        for (int i = 0;i < n; i++)
-            G[prerequisites[i][0]].push_back(prerequisites[i][1]);
-        visited.resize(numCourses);
-        parent.resize(numCourses, -1);
-
-        for (int i = 0;i < numCourses; i++)
-            if (!visited[i])
-                if (!DFS(i))
-                    return false;
-        return true;
+        return (numCourses == 0);
     }
 };
+// @lc code=end
+
+
+
+/*
+// @lcpr case=start
+// 2\n[[1,0]]\n
+// @lcpr case=end
+
+// @lcpr case=start
+// 2\n[[1,0],[0,1]]\n
+// @lcpr case=end
+
+ */
 

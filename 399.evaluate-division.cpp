@@ -1,82 +1,91 @@
 /*
- * @lc app=leetcode id=399 lang=cpp
+ * @lc app=leetcode.cn id=399 lang=cpp
+ * @lcpr version=30204
  *
- * [399] Evaluate Division
+ * [399] 除法求值
  */
-#include <vector>
-#include <unordered_map>
-#include <string>
-#include <map>
+
+
+// @lcpr-template-start
 using namespace std;
+#include <algorithm>
+#include <array>
+#include <bitset>
+#include <climits>
+#include <deque>
+#include <functional>
+#include <iostream>
+#include <list>
+#include <queue>
+#include <stack>
+#include <tuple>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <vector>
+// @lcpr-template-end
+// @lc code=start
 class Solution {
 public:
-    map<string,vector<string>> G;  // TODO: should choose a different data struct to obtain keys
-    map<string, vector<double>> G_values;
-    vector<double> ans;
-    map<string, bool> visited;
-
-    double DFS_visit(string a, string b)
+    pair<string, double> Find(const string& var)
     {
-        double rec;
-        for (int i = 0;i < G[a].size();i++)
-        if (!visited[G[a][i]])
-        {
-            visited[G[a][i]] = true;
-            if (G[a][i] == b)
-                return G_values[a][i];
-            else
-                {
-                    rec = DFS_visit(G[a][i], b);
-                    if (rec > 0)
-                        return rec * G_values[a][i];
-                }                  
-            // using DFS so will not go backward if not found          
+        if (parents[var].first != var) {
+            pair<string, double> parentInfo = Find(parents[var].first);
+            parents[var] = {parentInfo.first, parentInfo.second * parents[var].second};
         }
-        return -1; // indicate not found
+        return parents[var];
+    }
+
+    void Union(const string& leftVar, const string& rightVar, double value)
+    {
+        pair<string, double> parentLeftInfo = Find(parents[leftVar].first);
+        pair<string, double> parentRightInfo = Find(parents[rightVar].first);
+        parents[parentLeftInfo.first] = {parentRightInfo.first, parentRightInfo.second * value / parentLeftInfo.second};
     }
 
     vector<double> calcEquation(vector<vector<string>>& equations, vector<double>& values, vector<vector<string>>& queries) {
-        const int E =  equations.size();
-        for (int i = 0; i < E; ++i)
-        {
-            if (G.find(equations[i][0]) == G.end()) // not found
-            {
-                G[equations[i][0]] = vector<string>();
-                G_values[equations[i][0]] = vector<double>();
-                
-                visited[equations[i][0]] = false;
+        int nEquations = equations.size();
+        for (int i = 0; i < nEquations; i++) {
+            if (parents.find(equations[i][0]) == parents.end()) {
+                parents[equations[i][0]] = {equations[i][0], 1.0};
             }
-            G[equations[i][0]].push_back(equations[i][1]);
-            G_values[equations[i][0]].push_back(values[i]);
-
-            if (G.find(equations[i][1]) == G.end()) // not found
-            {
-                G[equations[i][1]] = vector<string>();
-                G_values[equations[i][1]] = vector<double>();
-                
-                visited[equations[i][1]] = false;
+            if (parents.find(equations[i][1]) == parents.end()) {
+                parents[equations[i][1]] = {equations[i][1], 1.0};
             }
-            G[equations[i][1]].push_back(equations[i][0]);
-            G_values[equations[i][1]].push_back(1/values[i]);
+            Union(equations[i][0], equations[i][1], values[i]);
         }
-
-        const int Q = queries.size();
-        for (int i = 0; i < Q; ++i)
-        {
-            if (G.find(queries[i][0]) == G.end() || G.find(queries[i][1]) == G.end()) // one of the vars. is not found
-                ans.push_back(-1.0);
-            else
-            {
-                for (auto it = visited.begin(); it != visited.end(); ++it)
-                    it->second = false;
-                if (queries[i][0] == queries[i][1])
-                    ans.push_back(1.0);
-                else
-                    ans.push_back(DFS_visit(queries[i][0], queries[i][1]));
+        vector<double> answer;
+        for (const vector<std::string> &query: queries) {
+            string leftVar = query[0];
+            string rightVar = query[1];
+            if (parents.find(leftVar) == parents.end()) {
+                answer.push_back(leftVar == rightVar ? 1.0 : -1.0);
             }
-                
+            pair<string, double> parentLeftInfo = Find(parents[leftVar].first);
+            pair<string, double> parentRightInfo = Find(parents[rightVar].first);
+            answer.push_back(parentLeftInfo.first == parentRightInfo.first ?
+                parentLeftInfo.second / parentRightInfo.second : -1.0);
         }
-        return ans;
+        return answer;
     }
+    unordered_map<string, pair<string, double>> parents;
 };
+// @lc code=end
+
+
+
+/*
+// @lcpr case=start
+// [["a","b"],["b","c"]]\n[2.0,3.0]\n[["a","c"],["b","a"],["a","e"],["a","a"],["x","x"]]\n
+// @lcpr case=end
+
+// @lcpr case=start
+// [["a","b"],["b","c"],["bc","cd"]]\n[1.5,2.5,5.0]\n[["a","c"],["c","b"],["bc","cd"],["cd","bc"]]\n
+// @lcpr case=end
+
+// @lcpr case=start
+// [["a","b"]]\n[0.5]\n[["a","b"],["b","a"],["a","c"],["x","y"]]\n
+// @lcpr case=end
+
+ */
 

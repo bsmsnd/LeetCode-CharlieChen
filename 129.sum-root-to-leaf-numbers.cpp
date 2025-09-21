@@ -4,6 +4,25 @@
  * [129] Sum Root to Leaf Numbers
  */
 
+
+// @lcpr-template-start
+using namespace std;
+#include <algorithm>
+#include <array>
+#include <bitset>
+#include <climits>
+#include <deque>
+#include <functional>
+#include <iostream>
+#include <list>
+#include <queue>
+#include <stack>
+#include <tuple>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <vector>
+// @lcpr-template-end
 // @lc code=start
 /**
  * Definition for a binary tree node.
@@ -22,7 +41,7 @@ public:
         int sum = 0;
         stack<pair<TreeNode*, int>> s;
         if (!root)return 0;
-        
+
         s.push(make_pair(root, root->val));
         TreeNode* curNode;
         int curVal;
@@ -30,7 +49,7 @@ public:
             curNode = s.top().first;
             curVal = s.top().second;
             s.pop();
-            
+
             if (!curNode->left && !curNode->right){
                 sum += curVal;
                 continue;

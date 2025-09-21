@@ -1,64 +1,96 @@
 /*
  * @lc app=leetcode id=79 lang=cpp
+ * @lcpr version=30117
  *
  * [79] Word Search
  */
-const int MOVE_X[4] = {1,0,-1,0};
-const int MOVE_Y[4] = {0,-1,0,1};
 
+
+// @lcpr-template-start
+using namespace std;
+#include <algorithm>
+#include <array>
+#include <bitset>
+#include <climits>
+#include <deque>
+#include <functional>
+#include <iostream>
+#include <list>
+#include <queue>
+#include <stack>
+#include <tuple>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <vector>
+// @lcpr-template-end
+// @lc code=start
 class Solution {
-public:    
-    vector<vector<char>> b;
-    string w;
-    int N, M;
-    vector<vector<bool>> visited;
-    
-    bool h(int x, int y, int t)
-    {
-        if (t >= w.size())
-            return true;
-        int cx, cy;
-        for (int i = 0; i < 4;i++)
-        {
-            cx = x + MOVE_X[i];
-            cy = y + MOVE_Y[i];
-            if (cx >= 0 && cx < N && cy >=0 && cy < M && !visited[cx][cy] && b[cx][cy] == w[t])
-            {
-                visited[cx][cy] = 1;
-                if (h(cx, cy, t+1))
+public:
+    bool exist(vector<vector<char>>& board, string word) {
+        n = board.size();
+        m = board[0].size();
+        visited.resize(n);
+        for (int i = 0; i < n; i++) {
+            visited[i].resize(m, false);
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (board[i][j] == word[0] &&
+                    Dfs(board, i, j, word, 0)) {
                     return true;
-                visited[cx][cy] = 0;
+                }
             }
         }
         return false;
     }
-    
-    bool exist(vector<vector<char>>& board, string word) {
-        vector<pair<int, int>> v;
-        b = board;
-        w = word;
-        N = board.size();
-        M = board[0].size();
-        
-        visited.resize(N);
-        for (int i = 0;i < N;i++)
-            visited[i].resize(M, false);
-        
-        for (int i = 0;i < N; i++)
-            for (int j = 0;j < M;j++)
-                if (board[i][j] == word[0])
-                    v.push_back({i,j});
-        
-        int n = v.size();
-        for (int i = 0; i < n; i++)
-        {
-            visited[v[i].first][v[i].second] = 1;
-            if (h(v[i].first, v[i].second, 1))
-                return true;
-            visited[v[i].first][v[i].second] = 0;
+private:
+    bool Dfs(const vector<vector<char>> &board, int x, int y, string word, int pos)
+    {
+        // printf("%d, %d\n", x, y);
+        if (!IsValid(x, y) ||
+            board[x][y] != word[pos] ||
+            visited[x][y]) {
+            return false;
         }
+        if (pos == word.length() - 1) {
+            return true;
+        }
+        visited[x][y] = true;
+        if (Dfs(board, x + 1, y, word, pos + 1) ||
+            Dfs(board, x, y + 1, word, pos + 1) ||
+            Dfs(board, x - 1, y, word, pos + 1) ||
+            Dfs(board, x, y - 1, word, pos + 1)) {
+            return true;
+        }
+        visited[x][y] = false;
         return false;
-    };
-    
+    }
+    bool IsValid(int x, int y)
+    {
+        return x >= 0 && x < n && y >= 0 && y < m;
+    }
+private:
+    vector<vector<bool>> visited;
+    int n;
+    int m;
 };
+// @lc code=end
+
+
+
+/*
+// @lcpr case=start
+// [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]]\n"ABCCED"\n
+// @lcpr case=end
+
+// @lcpr case=start
+// [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]]\n"SEE"\n
+// @lcpr case=end
+
+// @lcpr case=start
+// [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]]\n"ABCB"\n
+// @lcpr case=end
+
+ */
 

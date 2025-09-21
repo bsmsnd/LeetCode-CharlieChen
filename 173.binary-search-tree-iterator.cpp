@@ -4,6 +4,25 @@
  * [173] Binary Search Tree Iterator
  */
 
+
+// @lcpr-template-start
+using namespace std;
+#include <algorithm>
+#include <array>
+#include <bitset>
+#include <climits>
+#include <deque>
+#include <functional>
+#include <iostream>
+#include <list>
+#include <queue>
+#include <stack>
+#include <tuple>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <vector>
+// @lcpr-template-end
 // @lc code=start
 /**
  * Definition for a binary tree node.
@@ -30,13 +49,13 @@ public:
             }
         }
     }
-    
+
     /** @return the next smallest number */
     int next() {
         if (!curNode)return -1;
 
         int x = curNode->val;
-        
+
         if (curNode->right){
             curNode =  curNode->right;
             while(curNode->left){
@@ -56,7 +75,7 @@ public:
 
         return x;
     }
-    
+
     /** @return whether we have a next smallest number */
     bool hasNext() {
         if (curNode)

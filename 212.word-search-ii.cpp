@@ -1,107 +1,115 @@
+// @lcpr-before-debug-begin
+
+
+
+
+// @lcpr-before-debug-end
+
 /*
  * @lc app=leetcode id=212 lang=cpp
  *
  * [212] Word Search II
  */
 
-// @lc code=start
-#include <vector>
-#include <string>
-using namespace std;
 
-struct TrieNode
-{
-    bool isWord = false;
-    TrieNode* children[26] = {nullptr}; 
-    int child_cnt = 0;
+// @lcpr-template-start
+using namespace std;
+#include <algorithm>
+#include <array>
+#include <bitset>
+#include <climits>
+#include <deque>
+#include <functional>
+#include <iostream>
+#include <list>
+#include <queue>
+#include <stack>
+#include <tuple>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <vector>
+// @lcpr-template-end
+// @lc code=start
+struct Node {
+    Node *subtree[26];
+    Node() {
+        memset(subtree, 0, sizeof(subtree));
+    }
 };
 
-const int MX[4] = {1,0,-1,0};
-const int MY[4] = {0,-1,0,1};
+constexpr int DELTA_X[] = {0, 1, 0, -1};
+constexpr int DELTA_Y[] = {1, 0, -1, 0};
 
 class Solution {
 public:
-    TrieNode* head;
-    void addWord(string w)
-    {
-        int n = w.size();
-        TrieNode *cur = head;
-        for (int i = 0; i < n; i++)
-        {
-            if (!(cur->children[w[i]-'a']))
-            {
-                cur->children[w[i]-'a'] = new TrieNode;
-                if (i != n-1)
-                    cur->child_cnt++;
-            }
-            cur = cur->children[w[i] - 'a'];
-            if (i == n-1)
-                cur->isWord = true;
-        }
-    }
-
-    bool backtrack(int x, int y, TrieNode *cur)
-    {
-        if(!cur)return false;
-        if (cur->isWord)
-        {
-            ans.push_back(cur_word);
-            cur->isWord = false;
-        }        
-        int nx, ny;                
-        for (int k = 0;k < 4; k++)
-        if (cur->child_cnt > 0)
-        {
-            nx = x + MX[k]; ny = y + MY[k]; 
-            if (nx >= 0 && nx < N && ny >= 0 && ny < M && !visit[nx][ny])
-                if (cur->children[b[nx][ny] - 'a'])
-                {
-                    cur_word.push_back(b[nx][ny]);
-                    visit[nx][ny] = 1;
-                    if (backtrack(nx, ny, cur->children[b[nx][ny] - 'a']))
-                    {
-                        cur->child_cnt--;
-                        delete cur->children[b[nx][ny]];
-                        cur->children[b[nx][ny]] = nullptr;
-                    }
-                    visit[nx][ny] = 0;
-                    cur_word.pop_back();
-                }
-        }
-        if (!cur->isWord && cur->child_cnt <= 0)
-            return true;
-        return false;
-    }
-
-    string cur_word;
-    vector<string> ans;
-    vector<vector<bool>> visit;
-    vector<vector<char>> b;
-    int N, M;
     vector<string> findWords(vector<vector<char>>& board, vector<string>& words) {
-        b = board;
-        for (int i = 0; i < words.size(); i++)
-            addWord(words[i]);
-        N = board.size(); M = board[0].size();
-        visit.resize(N);
-        for (int i = 0;i < N; i++)
-            visit[i].resize(M, false);
-        
-        for (int i = 0;i < N; i++)
-        for (int j = 0;j < M; j++)
-        if (head->children[board[i][j]-'a'])
-        {
-            visit[i][j] = 1;
-            cur_word = board[i][j];
-            if (backtrack(i,j,head->children[board[i][j]-'a']))
-            {
-                head->child_cnt--;
-                delete head->children[board[i][j]-'a'];
-                head->children[board[i][j]-'a'] = nullptr;
+        Build(board);
+        vector<string> boardWords;
+        for (const string &word: words) {
+            if (Search(word)) {
+                boardWords.push_back(word);
             }
         }
-        return ans;
+        return boardWords;
     }
+private:
+    void Build(const vector<vector<char>>& board)
+    {
+        root = new Node();
+        n = board.size();
+        m = board[0].size();
+        visited.resize(n);
+        for (int i = 0; i < n; i++) {
+            visited[i].resize(m, false);
+        }
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                BuildTrie(board, i, j, 0, root);
+            }
+        }
+    }
+
+    void BuildTrie(const vector<vector<char>>& board, int x, int y,
+        int chars, Node *node)
+    {
+        if (node->subtree[board[x][y] - 'a'] == nullptr) {
+            node->subtree[board[x][y] - 'a'] = new Node();
+        }
+        node = node->subtree[board[x][y] - 'a'] ;
+        visited[x][y] = true;
+        for (int t = 0; t < 4; t++) {
+            int newX = x + DELTA_X[t];
+            int newY = y + DELTA_Y[t];
+            if (IsValid(newX, newY) && chars + 1 < 10 && !visited[newX][newY]) {
+                BuildTrie(board, newX, newY, chars + 1, node);
+            }
+        }
+        visited[x][y] = false;
+    }
+
+    bool IsValid(int x, int y)
+    {
+        return x >= 0 && x < n && y >= 0 && y < m;
+    }
+
+    bool Search(const string &word)
+    {
+        Node *node = root;
+        for (char ch : word) {
+            if (node->subtree[ch - 'a'] == nullptr) {
+                return false;
+            }
+            node = node->subtree[ch - 'a'];
+        }
+        return (node != nullptr);
+    }
+private:
+    Node *root;
+    vector<vector<bool>> visited;
+    int n;
+    int m;
 };
 // @lc code=end
 
